@@ -41,8 +41,8 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    Provider.of<MineProvider>(context, listen: false).setRandomBombs();
     Provider.of<MineProvider>(context, listen: false).setSquareStatus();
+    Provider.of<MineProvider>(context, listen: false).setRandomBombs();
     Provider.of<MineProvider>(context, listen: false).scanBombs();
   }
 
@@ -58,7 +58,7 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,
         appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          backgroundColor: const Color.fromARGB(255, 202, 202, 202),
           elevation: 0,
           centerTitle: true,
           title: const Text('Minesweeper'),
@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
                 Column(
                   children: [
                     Text(
-                      '${provider.bombLocation.length}',
+                      '${provider.bombLocation.length - provider.flagAmount}',
                       style: const TextStyle(
                           fontSize: 42.0, fontWeight: FontWeight.w200),
                     ),
@@ -96,14 +96,14 @@ class _HomePageState extends State<HomePage> {
                   icon: const Icon(Icons.refresh),
                   iconSize: 42.0,
                 ),
-                const Column(
+                Column(
                   children: [
                     Text(
-                      '10',
-                      style: TextStyle(
+                      '${provider.countdownValue}',
+                      style: const TextStyle(
                           fontSize: 42.0, fontWeight: FontWeight.w200),
                     ),
-                    Text(
+                    const Text(
                       'T I M E',
                       style: TextStyle(
                           fontSize: 18.0, fontWeight: FontWeight.w200),
@@ -128,7 +128,7 @@ class _HomePageState extends State<HomePage> {
                         mainAxisSpacing: 2.0,
                         crossAxisSpacing: 2.0,
                       ),
-                      itemBuilder: (BuildContext context, int index) {
+                      itemBuilder: (BuildContext context, int index) {                        
                         if (provider.bombLocation.contains(index)) {
                           return BombBox(
                             revealed: provider.bombRevealed,

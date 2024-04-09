@@ -36,6 +36,10 @@ class NumberBox extends StatelessWidget {
                   }
                 : () {
                     provider.revealBox(index);
+                    if (provider.startPlaying == false) {
+                      provider.startGame();
+                      provider.startTimer();
+                    }
                     if (provider.playerWon) {
                       playerWon();
                     }

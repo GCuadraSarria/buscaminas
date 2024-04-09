@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+
+enum GameDifficulty { easy, medium, hard }
 
 class MineProvider extends ChangeNotifier {
   int _numberInEachRow = 7;
@@ -8,9 +11,19 @@ class MineProvider extends ChangeNotifier {
   int _numberOfSquares = 7 * 7;
   int get numberOfSquares => _numberOfSquares;
 
+  // game difficulty
+  GameDifficulty _gameDifficulty = GameDifficulty.medium;
+  GameDifficulty get gameDifficulty => _gameDifficulty;
+
   // [number of bombs around, revealed = true / false, flag = true / false]
   final List _squareStatus = [];
   List get squareStatus => _squareStatus;
+
+  // Define a Timer object
+  Timer? _timer;
+  // Define a variable to store the current countdown value
+  int _countdownValue = 0;
+  int get countdownValue => _countdownValue;
 
   // index where the bombs are in the game
   List<int> _bombLocation = [];
@@ -20,8 +33,12 @@ class MineProvider extends ChangeNotifier {
   bool _setFlagger = false;
   bool get setFlagger => _setFlagger;
 
+  // amount of flags
+  int _flagAmount = 0;
+  int get flagAmount => _flagAmount;
+
   // amount of bombs
-  final int _bombAmount = 7;
+  int _bombAmount = 7;
   int get bombAmount => _bombAmount;
 
   // did game finish
@@ -36,9 +53,50 @@ class MineProvider extends ChangeNotifier {
   bool _bombRevealed = false;
   bool get bombRevealed => _bombRevealed;
 
+  // start the game
+  bool _startPlaying = false;
+  bool get startPlaying => _startPlaying;
+
+  // player set difficulty
+  void setDifficulty(GameDifficulty value) {
+    _gameDifficulty = value;
+    switch (value) {
+      case GameDifficulty.easy:
+        _bombAmount = 5;
+        gridSettings(5);
+        notifyListeners();
+        break;
+      case GameDifficulty.medium:
+        _bombAmount = 7;
+        gridSettings(7);
+        notifyListeners();
+        break;
+      default:
+        _bombAmount = 13;
+        gridSettings(9);
+        notifyListeners();
+    }
+    notifyListeners();
+  }
+
+  // start the countdown timer
+  void startTimer() {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _countdownValue++;
+      notifyListeners();
+    });
+  }
+
+  // we tap our first square
+  void startGame() {
+    _startPlaying = true;
+    notifyListeners();
+  }
+
   // player tap a bomb
   void setBombRevealed() {
     _bombRevealed = true;
+    _timer?.cancel();
     notifyListeners();
   }
 
@@ -61,11 +119,15 @@ class MineProvider extends ChangeNotifier {
     _playerWon = false;
     _setFlagger = false;
     _bombRevealed = false;
+    _startPlaying = false;
+    _flagAmount = 0;
     _bombLocation = [];
     setRandomBombs();
     _squareStatus.clear();
     setSquareStatus();
     scanBombs();
+    _timer?.cancel();
+    _countdownValue = 0;
     notifyListeners();
   }
 
@@ -81,6 +143,7 @@ class MineProvider extends ChangeNotifier {
     // if the number is same as the bombs, the player wins
     if (unrevealedBoxes == _bombAmount) {
       _playerWon = true;
+      _timer?.cancel();
     }
     notifyListeners();
   }
@@ -109,14 +172,16 @@ class MineProvider extends ChangeNotifier {
   void setFlag(int index) {
     if (_squareStatus[index][2] == true) {
       _squareStatus[index][2] = false;
+      _flagAmount--;
     } else {
       _squareStatus[index][2] = true;
+      _flagAmount++;
     }
     notifyListeners();
   }
 
   // flag clicker
-  void setFlagClicker(){
+  void setFlagClicker() {
     _setFlagger = !_setFlagger;
     notifyListeners();
   }
