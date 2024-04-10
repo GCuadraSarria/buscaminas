@@ -33,10 +33,6 @@ class MineProvider extends ChangeNotifier {
   bool _setFlagger = false;
   bool get setFlagger => _setFlagger;
 
-  // amount of flags
-  int _flagAmount = 0;
-  int get flagAmount => _flagAmount;
-
   // amount of bombs
   int _bombAmount = 7;
   int get bombAmount => _bombAmount;
@@ -100,17 +96,22 @@ class MineProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // random bomb geneartor
-  void setRandomBombs() {
+  // random bomb geneartor (we pass first index to avoid it to have a bomb)
+  void setRandomBombs(int index) {
     Random random = Random();
     Set<int> uniqueNumbers = {}; // Set to store unique random numbers
 
+    
     while (uniqueNumbers.length < _bombAmount) {
       int randomNumber = random.nextInt(_numberOfSquares);
-      uniqueNumbers.add(randomNumber);
+      if (randomNumber != index) {
+        uniqueNumbers.add(randomNumber);
+      }
     }
 
     _bombLocation = uniqueNumbers.toList(); // Convert set to list
+    print('Index -> $index');
+    print(_bombLocation.map((e) => '$e'));
   }
 
   // restart the game
@@ -120,14 +121,11 @@ class MineProvider extends ChangeNotifier {
     _setFlagger = false;
     _bombRevealed = false;
     _startPlaying = false;
-    _flagAmount = 0;
     _bombLocation = [];
-    setRandomBombs();
-    _squareStatus.clear();
-    setSquareStatus();
-    scanBombs();
     _timer?.cancel();
     _countdownValue = 0;
+    _squareStatus.clear();
+    setSquareStatus();
     notifyListeners();
   }
 
@@ -172,10 +170,8 @@ class MineProvider extends ChangeNotifier {
   void setFlag(int index) {
     if (_squareStatus[index][2] == true) {
       _squareStatus[index][2] = false;
-      _flagAmount--;
     } else {
       _squareStatus[index][2] = true;
-      _flagAmount++;
     }
     notifyListeners();
   }

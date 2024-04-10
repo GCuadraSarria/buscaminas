@@ -38,7 +38,7 @@ class BombBox extends StatelessWidget {
                     playerLost();
                   },
         child: Container(
-          color: provider.squareStatus[index][2] == true
+          color: provider.squareStatus[index][2] == true || revealed == true
               ? Theme.of(context).colorScheme.secondary
               : Theme.of(context).colorScheme.inversePrimary,
           child: revealed

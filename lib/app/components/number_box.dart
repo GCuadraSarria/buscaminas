@@ -35,11 +35,15 @@ class NumberBox extends StatelessWidget {
                     provider.setFlag(index);
                   }
                 : () {
-                    provider.revealBox(index);
                     if (provider.startPlaying == false) {
                       provider.startGame();
                       provider.startTimer();
+                      Provider.of<MineProvider>(context, listen: false)
+                          .setRandomBombs(index);
+                      Provider.of<MineProvider>(context, listen: false)
+                          .scanBombs();
                     }
+                    provider.revealBox(index);
                     if (provider.playerWon) {
                       playerWon();
                     }

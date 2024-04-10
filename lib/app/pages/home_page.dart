@@ -42,8 +42,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     Provider.of<MineProvider>(context, listen: false).setSquareStatus();
-    Provider.of<MineProvider>(context, listen: false).setRandomBombs();
-    Provider.of<MineProvider>(context, listen: false).scanBombs();
+    // Provider.of<MineProvider>(context, listen: false).setRandomBombs();
+    // Provider.of<MineProvider>(context, listen: false).scanBombs();
   }
 
   @override
@@ -80,7 +80,7 @@ class _HomePageState extends State<HomePage> {
                 Column(
                   children: [
                     Text(
-                      '${provider.bombLocation.length - provider.flagAmount}',
+                      '${provider.bombAmount}',
                       style: const TextStyle(
                           fontSize: 42.0, fontWeight: FontWeight.w200),
                     ),
@@ -128,7 +128,7 @@ class _HomePageState extends State<HomePage> {
                         mainAxisSpacing: 2.0,
                         crossAxisSpacing: 2.0,
                       ),
-                      itemBuilder: (BuildContext context, int index) {                        
+                      itemBuilder: (BuildContext context, int index) {
                         if (provider.bombLocation.contains(index)) {
                           return BombBox(
                             revealed: provider.bombRevealed,
